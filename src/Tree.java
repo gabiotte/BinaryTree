@@ -5,6 +5,10 @@ public class Tree<TYPE extends Comparable> {
         this.raiz = null;
     }
 
+    public Node<TYPE> getRoot() {
+        return raiz;
+    }
+
     public void add(TYPE data) {
         Node<TYPE> newNode = new Node<TYPE>(data);
         if (raiz == null) {
@@ -31,4 +35,49 @@ public class Tree<TYPE extends Comparable> {
             }
         }
     }
+
+    public void remove(TYPE data) {
+        raiz = removeNode(raiz, data);
+    }
+
+    private Node<TYPE> removeNode(Node<TYPE> currentNode, TYPE data) {
+        if (currentNode == null) {
+            return null;
+        }
+        if (data.compareTo(currentNode.getData()) < 0) {
+            currentNode.setLeft(removeNode(currentNode.getLeft(), data));
+        } else if (data.compareTo(currentNode.getData()) > 0) {
+            currentNode.setRight(removeNode(currentNode.getRight(), data));
+        } else {
+            // Encontramos o nó
+
+            // Nenhum filho:
+            if (currentNode.getLeft() == null && currentNode.getRight() == null) {
+               return null;
+            }
+
+            // Um filho:
+            if (currentNode.getLeft() != null) {
+                return currentNode.getLeft();
+            } else if (currentNode.getRight() != null) {
+                return currentNode.getRight();
+            }
+
+            // Dois filhos:
+            // Encontrando o menor valor:
+            Node<TYPE> minNode = findMin(currentNode.getRight());
+            currentNode.setData(minNode.getData());
+            currentNode.setRight(removeNode(currentNode.getRight(), minNode.getData()));
+        }
+
+        return currentNode;
+    }
+
+    private Node<TYPE> findMin(Node<TYPE> node) {
+        while (node.getLeft() != null) {
+            node = node.getLeft();
+        }
+        return node;
+    }
+
 }
