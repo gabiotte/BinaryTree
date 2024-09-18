@@ -8,8 +8,33 @@ public class Tree<TYPE extends Comparable> {
     public Node<TYPE> getRoot() {
         return raiz;
     }
+    private boolean contains(TYPE data) {
+        return containsRecursive(raiz, data);
+    }
+
+    private boolean containsRecursive(Node<TYPE> currentNode, TYPE data) {
+        if (currentNode == null) {
+            return false;
+        }
+
+        int comparison = data.compareTo(currentNode.getData());
+
+        if (comparison < 0) {
+            return containsRecursive(currentNode.getLeft(), data);
+        } else if (comparison > 0) {
+            return containsRecursive(currentNode.getRight(), data);
+        } else {
+            return true;
+        }
+    }
 
     public void add(TYPE data) {
+
+        if (contains(data)) {
+            System.out.println("O valor já existe na árvore: " + data);
+            return;
+        }
+
         Node<TYPE> newNode = new Node<TYPE>(data);
         if (raiz == null) {
             this.raiz = newNode;
@@ -37,47 +62,46 @@ public class Tree<TYPE extends Comparable> {
     }
 
     public void remove(TYPE data) {
-        raiz = removeNode(raiz, data);
+        raiz = removeRecursive(raiz, data);
     }
 
-    private Node<TYPE> removeNode(Node<TYPE> currentNode, TYPE data) {
-        if (currentNode == null) {
+    private Node<TYPE> removeRecursive(Node<TYPE> current, TYPE data) {
+        if (current == null) {
             return null;
         }
-        if (data.compareTo(currentNode.getData()) < 0) {
-            currentNode.setLeft(removeNode(currentNode.getLeft(), data));
-        } else if (data.compareTo(currentNode.getData()) > 0) {
-            currentNode.setRight(removeNode(currentNode.getRight(), data));
+
+        int comparison = data.compareTo(current.getData());
+
+        if (comparison < 0) {
+            current.setLeft(removeRecursive(current.getLeft(), data));
+        } else if (comparison > 0) {
+            current.setRight(removeRecursive(current.getRight(), data));
         } else {
-            // Encontramos o nó
+            // Encontrou o nó a ser removido
 
-            // Nenhum filho:
-            if (currentNode.getLeft() == null && currentNode.getRight() == null) {
-               return null;
+            if (current.getLeft() == null && current.getRight() == null) {
+                return null;
             }
 
-            // Um filho:
-            if (currentNode.getLeft() != null) {
-                return currentNode.getLeft();
-            } else if (currentNode.getRight() != null) {
-                return currentNode.getRight();
+            if (current.getLeft() == null) {
+                return current.getRight();
             }
 
-            // Dois filhos:
-            // Encontrando o menor valor:
-            Node<TYPE> minNode = findMin(currentNode.getRight());
-            currentNode.setData(minNode.getData());
-            currentNode.setRight(removeNode(currentNode.getRight(), minNode.getData()));
+            if (current.getRight() == null) {
+                return current.getLeft();
+            }
+
+            Node<TYPE> smallestValueNode = findSmallestNode(current.getRight());
+            current.setData(smallestValueNode.getData());
+            current.setRight(removeRecursive(current.getRight(), smallestValueNode.getData()));
         }
 
-        return currentNode;
+        return current;
     }
 
-    private Node<TYPE> findMin(Node<TYPE> node) {
-        while (node.getLeft() != null) {
-            node = node.getLeft();
-        }
-        return node;
+    private Node<TYPE> findSmallestNode(Node<TYPE> root) {
+        return root.getLeft() == null ? root : findSmallestNode(root.getLeft());
     }
+
 
 }
