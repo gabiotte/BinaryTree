@@ -30,11 +30,6 @@ public class Tree<TYPE extends Comparable> {
 
     public void add(TYPE data) {
 
-        if (contains(data)) {
-            System.out.println("O valor já existe na árvore: " + data);
-            return;
-        }
-
         Node<TYPE> newNode = new Node<TYPE>(data);
         if (raiz == null) {
             this.raiz = newNode;
